@@ -1,12 +1,34 @@
-﻿<Window x:Class="Crypto_Portfolio.MainWindow"
+﻿<Controls:MetroWindow x:Class="Crypto_Portfolio.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Crypto_Portfolio"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        Title="Crypto Porfolio" 
+        Height="700" 
+        Width="725"
+        Icon="bitcoinlight.png">
     <Grid>
-        
+
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="129" VerticalAlignment="Top" Width="725" Margin="0,0,-0.333,0">
+            <Button x:Name="UpdatePriceButton" Content="Update Price Button" HorizontalAlignment="Left" VerticalAlignment="Top" Width="159" Height="109" Click="UpdatePriceButtonClicked" Margin="8.667,8.667,0,0"/>
+        </Border>
+        <ListView x:Name="CoinListView" HorizontalAlignment="Left" Height="527" Margin="10,134,0,0" VerticalAlignment="Top" Width="700">
+            <ListView.View>
+                <GridView x:Name="GridView1">
+                    <GridViewColumn Header="Coin Name" Width="180"  DisplayMemberBinding="{Binding name}"/>
+                    <GridViewColumn Header="Coin Holdings" Width="180"  DisplayMemberBinding="{Binding holdings}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding holdingBox}" Width="180"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Coin Price" Width="158"  DisplayMemberBinding="{Binding price}"/>
+                    <GridViewColumn Header="Total Fiat Value" Width="180"  DisplayMemberBinding="{Binding total}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Controls:MetroProgressBar x:Name ="ProgressBar" Background="SteelBlue" Foreground="LimeGreen" HorizontalAlignment="Left" Margin="0,129,0,0" VerticalAlignment="Top" Width="725" Height="5"/>
     </Grid>
-</Window>
+</Controls:MetroWindow>
+
+    
