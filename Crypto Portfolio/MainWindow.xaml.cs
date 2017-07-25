@@ -34,8 +34,6 @@ namespace Crypto_Portfolio
             worker.RunWorkerCompleted += worker_RunWorkerCompleted;
             workerAPI.DoWork += workerAPI_DoWork;
             workerAPI.RunWorkerCompleted += WorkerAPI_RunWorkerCompleted;
-
-            // TODO: Fix Race Condition between worker threads not showing grid. Argument out of range exception
         }
 
         private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -44,7 +42,7 @@ namespace Crypto_Portfolio
             {
                 // Wait to avoid race condition on grid creation call before api coin prices are returned.
                 // This would result in argument out of range exception. When this worker thread is completed,
-                // the thread should wait until the API request is at completed before generating grid.
+                // the thread should wait until the API request is completed before generating grid.
                 Thread.Sleep(1);
             }
             createCoinGrid(coinList);
@@ -107,16 +105,15 @@ namespace Crypto_Portfolio
             {
                 foreach (string coinName in coinList)
                 {
-                    double coinsHeld = coinHoldings[coinIndex];
-                    coinTotal = coinPriceList[coinIndex] * (decimal)coinsHeld;
+                    coinTotal = coinPriceList[coinIndex] * (decimal)coinHoldings[coinIndex];
                     CoinListView.Items.Add(new GridItems
                     {
                         name = coinName,
-                        holdings = coinsHeld,
+                        holdings = coinHoldings[coinIndex],
                         price = coinPriceList[coinIndex],
                         total = coinTotal.ToString("C2")
                     });
-                    if (coinsHeld < coinHoldings.Count())
+                    if (coinIndex < coinHoldings.Count())
                     {
                         coinIndex++;
                     }
