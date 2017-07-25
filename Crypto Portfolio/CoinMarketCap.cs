@@ -1,6 +1,4 @@
-﻿using System;
-
-
+﻿
 namespace Crypto_Portfolio
 {
     public class CoinMarketCap
