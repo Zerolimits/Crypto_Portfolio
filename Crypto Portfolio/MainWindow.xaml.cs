@@ -51,6 +51,13 @@ namespace Crypto_Portfolio
 
         private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            while (apiCompletedFlag == false)
+            {
+                // Wait to avoid race condition on grid creation call before api coin prices are returned.
+                // This would result in argument out of range exception. When this worker thread is completed,
+                // the thread should wait until the API request is at completed before generating grid.
+                Thread.Sleep(1);
+            }
             createCoinGrid(coinList);
         }
 
@@ -66,9 +73,16 @@ namespace Crypto_Portfolio
             int ticker = (100 / workerDifficulty) + 1;
             for (int i = 0; i <= 100; i += ticker)
             {
-                // ~.28 seconds per coin price to retrieve each price
-                Thread.Sleep(280);
+                // ~.5 seconds per coin price to retrieve each price, varies by connection/location
+                // to coinmarketcap.com. .5 is an assumption to provide a relative progress by coin.
+                Thread.Sleep(500);
                 worker.ReportProgress(i);
+
+                // Stop filling progress bar and break if the api call is done, after will set progress to 100.
+                if (apiCompletedFlag == true)
+                {
+                    break;
+                }
             }
             worker.ReportProgress(100);
         }
@@ -80,12 +94,16 @@ namespace Crypto_Portfolio
 
         private void workerAPI_DoWork(object sender, DoWorkEventArgs e)
         {
+            apiCompletedFlag = false;
             coinPriceList = restObject.requestPrice(coinList);
         }
 
 
         private void refreshAllCoinPricesTimer()
         {
+            //removeGridItems();
+            coinLogFileImport();
+            worker.RunWorkerAsync();
             // TODO build timer to update prices 5 times per minute (every 20 seconds).
         }
 
