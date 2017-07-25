@@ -18,6 +18,7 @@ namespace Crypto_Portfolio
         public List<string> coinList = new List<string>();
         public List<double> coinHoldings = new List<double>();
         public List<decimal> coinPriceList = new List<decimal>();
+        public List<object> gridObjects = new List<object>();
         public int workerDifficulty = 0;
         BackgroundWorker worker = new BackgroundWorker();
         BackgroundWorker workerAPI = new BackgroundWorker();
@@ -96,9 +97,11 @@ namespace Crypto_Portfolio
 
         private void createCoinGrid(List<string> coinList)
         {
+            removeGridItems();
             decimal coinTotal;
             int coinIndex = 0;
             decimal coinTotalValue = 0;
+            
 
             // Build grid from lists
             try
@@ -106,13 +109,18 @@ namespace Crypto_Portfolio
                 foreach (string coinName in coinList)
                 {
                     coinTotal = coinPriceList[coinIndex] * (decimal)coinHoldings[coinIndex];
-                    CoinListView.Items.Add(new GridItems
+                    
+                    GridItems gridItem = new GridItems
                     {
                         name = coinName,
                         holdings = coinHoldings[coinIndex],
                         price = coinPriceList[coinIndex],
                         total = coinTotal.ToString("C2")
-                    });
+                    };
+
+                    gridObjects.Add(gridItem);
+                    CoinListView.Items.Add(gridItem);
+
                     if (coinIndex < coinHoldings.Count())
                     {
                         coinIndex++;
@@ -121,18 +129,54 @@ namespace Crypto_Portfolio
                 }
 
                 //Add totals for final Row
-                CoinListView.Items.Add(new GridItems
+                
+                GridItems gridItemTotal = new GridItems
                 {
                     name = "Grand Total Value",
                     total = coinTotalValue.ToString("C2")
-                });
+                };
+
+                gridObjects.Add(gridItemTotal);
+                CoinListView.Items.Add(gridItemTotal);
+            }
+            catch (Exception e)
+            {
+                string error = "error" + e;
+                // Gotta catch em all...
+            }
+        }
+
+        private void removeGridItems()
+        {
+            // TODO: Need to fix the clearing/removing of list view 
+            // before updating the next set of prices. Problem stems from
+            // the current list view being dynamicly created using new GridItems
+            // which contain no reference, clear and remove methods don't work.
+            try
+            {
+
+                // THIS DOESNT WORK!?!?
+                CoinListView.Items.Clear();
+                gridObjects.Clear();
+                CoinListView.DataContext = gridObjects;
+                /*
+                foreach (object o in gridObjects)
+                {
+                    CoinListView.Items.Remove(o);
+                }
+
+                for (int i = 0; i <= gridObjects.Count(); i++)
+                {
+                    CoinListView.Items.Remove(gridObjects[i]);
+                }
+                */
             }
             catch (Exception e)
             {
                 // Gotta catch em all...
             }
-        }
 
+        }
         public class GridItems
         {
             public string name { get; set; }
@@ -143,7 +187,6 @@ namespace Crypto_Portfolio
 
         private void UpdatePriceButtonClicked(object sender, RoutedEventArgs e)
         {
-            CoinListView.Items.Clear();
             coinLogFileImport();
             worker.RunWorkerAsync();     
         }

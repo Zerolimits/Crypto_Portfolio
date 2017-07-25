@@ -15,13 +15,7 @@
             <ListView.View>
                 <GridView x:Name="GridView1">
                     <GridViewColumn Header="Coin Name" Width="180"  DisplayMemberBinding="{Binding name}"/>
-                    <GridViewColumn Header="Coin Holdings" Width="180"  DisplayMemberBinding="{Binding holdings}">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBox Text="{Binding holdingBox}" Width="180"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
+                    <GridViewColumn Header="Coin Holdings" Width="180"  DisplayMemberBinding="{Binding holdings}"/>
                     <GridViewColumn Header="Coin Price" Width="158"  DisplayMemberBinding="{Binding price}"/>
                     <GridViewColumn Header="Total Fiat Value" Width="180"  DisplayMemberBinding="{Binding total}"/>
                 </GridView>
